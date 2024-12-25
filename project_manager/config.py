@@ -6,7 +6,7 @@ from pydantic import PostgresDsn
 
 class ServerSettings(BaseModel):
     host: str
-    port: str
+    port: int
     reload: bool
 
 
@@ -25,4 +25,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-print(settings)
