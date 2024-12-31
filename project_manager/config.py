@@ -13,8 +13,14 @@ class DbSettings(BaseModel):
     echo: bool
 
 
+class AppSettings(BaseModel):
+    project_prefix: str = "/projects"
+    task_prefix: str = "/tasks"
+
+
 class Settings(BaseSettings):
     db: DbSettings
+    prefix: AppSettings = AppSettings()
     server: ServerSettings
     model_config = SettingsConfigDict(
         case_sensitive=False,
