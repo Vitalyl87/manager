@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Optional
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -13,7 +12,7 @@ class Task(Base):
     status: Mapped[Status] = mapped_column(
         default=Status.new, server_default="'new'", nullable=False
     )
-    deadline: Mapped[Optional[date]]
+    deadline: Mapped[date | None]
 
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
     project: Mapped["Project"] = relationship("Project", back_populates="tasks")
