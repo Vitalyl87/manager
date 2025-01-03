@@ -1,5 +1,11 @@
-from sqlalchemy.ext.asyncio import (AsyncEngine, async_sessionmaker,
-                                    create_async_engine)
+from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from project_manager.config import settings
 
@@ -11,7 +17,7 @@ class Db_hepler:
             bind=self.engine, autoflush=False, expire_on_commit=False
         )
 
-    async def get_session(self):
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
             yield session
 
@@ -19,4 +25,4 @@ class Db_hepler:
         await self.engine.dispose()
 
 
-dp_hepler = Db_hepler(url=str(settings.db.url), echo=settings.db.echo)
+dp_helper = Db_hepler(url=str(settings.db.url), echo=settings.db.echo)

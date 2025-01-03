@@ -1,14 +1,14 @@
 from pydantic import BaseModel, Field
 
 
-class UserBase(BaseModel):
+class ProjectBase(BaseModel):
     name: str = Field(max_length=100)
 
 
-class ProjectRead(UserBase):
+class ProjectRead(ProjectBase):
     id: int
 
 
-class ProjectCreate(UserBase):
+class ProjectCreate(ProjectBase):
     name: str = Field(max_length=100)
     description: str | None

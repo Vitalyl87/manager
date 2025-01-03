@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Text
 
 from project_manager.base import Base
+from project_manager.task.models import Task
 
 
 class Project(Base):
