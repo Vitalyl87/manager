@@ -14,8 +14,6 @@ class TaskDao(BaseDao):
     async def get_task_by_project_id(
         cls, session: AsyncSession, project_id: int, **filter_by
     ) -> list[TaskRead]:
-        print("DAO!")
-        print(filter_by)
         stmt = (
             Select(cls.model)
             .where(cls.model.project_id == project_id)
@@ -26,7 +24,9 @@ class TaskDao(BaseDao):
         return result.all()
 
     @classmethod
-    async def create_task_for_project_id(cls, session: AsyncSession, task: TaskCreate):
+    async def create_task_for_project_id(
+        cls, session: AsyncSession, task: TaskCreate
+    ) -> None:
         data = task.model_dump()
         new_task = Task(**data)
         session.add(new_task)

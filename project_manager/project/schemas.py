@@ -10,5 +10,4 @@ class ProjectRead(ProjectBase):
 
 
 class ProjectCreate(ProjectBase):
-    name: str = Field(max_length=100)
     description: str | None

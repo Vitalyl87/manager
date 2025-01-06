@@ -16,6 +16,7 @@ class DbSettings(BaseModel):
 class AppSettings(BaseModel):
     project_prefix: str = "/projects"
     task_prefix: str = "/tasks"
+    data_prefix: str = "/add_data"
 
 
 class Settings(BaseSettings):

@@ -24,7 +24,6 @@ async def get_task_by_project_id(
     session: AsyncSession = Depends(dp_helper.get_session),
 ) -> list[TaskRead]:
     if status is None:
-        print("dadadadada")
         return await TaskDao.get_task_by_project_id(
             session=session, project_id=project_id
         )
@@ -37,8 +36,24 @@ async def get_task_by_project_id(
 async def add_task_for_project(
     task_data: TaskCreate,
     session: AsyncSession = Depends(dp_helper.get_session),
-) -> None:
+) -> dict:
     await TaskDao.create_task_for_project_id(session=session, task=task_data)
     return {
         "message": f"Task for project (id={task_data.project_id}) added successfully"
     }
+
+
+@router.delete("/{task_id}", status_code=200)
+async def delete_task_by_id(
+    task_id: int, session: AsyncSession = Depends(dp_helper.get_session)
+) -> dict:
+    await TaskDao.delete_by_id_or_404(session=session, id=task_id)
+    return {"message": f"Task with id={task_id} was deleted successfully"}
+
+
+@router.patch("/{task_id}/status")
+async def update_task_status(
+    task_id: int, status: Status, session: AsyncSession = Depends(dp_helper.get_session)
+):
+    await TaskDao.patch_by_id_or_404(session=session, id=task_id, status=status)
+    return {"message": f"Task with id={task_id} was updated successfully"}
