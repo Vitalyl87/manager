@@ -23,7 +23,7 @@ main_app.include_router(data_router)
 
 
 @main_app.get("/")
-async def hello():
+def hello():
     return "hello world"
 
 

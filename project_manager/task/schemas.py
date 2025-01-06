@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
 from datetime import date
+
+from pydantic import BaseModel, Field
+
 from project_manager.task.status import Status
 
 
