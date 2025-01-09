@@ -9,8 +9,8 @@ from project_manager.project.schemas import ProjectRead
 router = APIRouter(prefix=settings.prefix.project_prefix)
 
 
-@router.get("/")
+@router.get("/", status_code=200)
 async def get_projects(
-    session: AsyncSession = Depends(dp_helper.get_session),
+    session: AsyncSession = Depends(dp_helper.get_session)
 ) -> list[ProjectRead]:
     return await ProjectDao.get_all(session)

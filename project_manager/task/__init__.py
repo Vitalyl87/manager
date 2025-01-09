@@ -10,7 +10,7 @@ from project_manager.task.status import Status
 router = APIRouter(prefix=settings.prefix.task_prefix)
 
 
-@router.get("/")
+@router.get("/", status_code=200)
 async def get_tasks(
     session: AsyncSession = Depends(dp_helper.get_session),
 ) -> list[TaskRead]:
