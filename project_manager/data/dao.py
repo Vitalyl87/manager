@@ -23,6 +23,7 @@ class DataDao:
         session.add(new_entity)
         try:
             await session.commit()
+            await session.refresh(new_entity)
         except Exception as e:
             await session.rollback()
             raise e

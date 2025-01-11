@@ -8,7 +8,7 @@ from project_manager.db_helper import dp_helper
 router = APIRouter(prefix=settings.prefix.data_prefix)
 
 
-@router.post("/", status_code=200)
+@router.post("/", status_code=201)
 async def create_projects_with_tasks(
     prj_count: int,
     task_count: int,
