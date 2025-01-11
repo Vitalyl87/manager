@@ -17,7 +17,7 @@ async def get_tasks(
     return await TaskDao.get_all(session)
 
 
-@router.get("/{project_id}")
+@router.get("/{project_id}", status_code=200)
 async def get_task_by_project_id(
     project_id: int,
     status: Status = None,
@@ -32,14 +32,15 @@ async def get_task_by_project_id(
     )
 
 
-@router.post("/", status_code=200)
+@router.post("/", status_code=201)
 async def add_task_for_project(
     task_data: TaskCreate,
     session: AsyncSession = Depends(dp_helper.get_session),
 ) -> dict:
-    await TaskDao.create_task_for_project_id(session=session, task=task_data)
+    task_id = await TaskDao.create_task_for_project_id(session=session, task=task_data)
     return {
-        "message": f"Task for project (id={task_data.project_id}) added successfully"
+        "message": f"Task for project (id={task_data.project_id}) added successfully",
+        "created_task_id": task_id,
     }
 
 
@@ -51,7 +52,7 @@ async def delete_task_by_id(
     return {"message": f"Task with id={task_id} was deleted successfully"}
 
 
-@router.patch("/{task_id}/status")
+@router.patch("/{task_id}/status", status_code=200)
 async def update_task_status(
     task_id: int, status: Status, session: AsyncSession = Depends(dp_helper.get_session)
 ):

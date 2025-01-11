@@ -34,4 +34,8 @@ class BaseDao:
         await cls.get_by_id_or_404(session=session, id=id)
         stmt = update(cls.model).where(cls.model.id == id).values(**values)
         await session.execute(stmt)
-        await session.commit()
+        try:
+            await session.commit()
+        except Exception as ex:
+            await session.rollback()
+            raise HTTPException(status_code=422, detail=str(ex.orig))

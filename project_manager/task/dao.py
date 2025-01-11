@@ -21,17 +21,25 @@ class TaskDao(BaseDao):
             .order_by(cls.model.id)
         )
         result = await session.scalars(stmt)
-        return result.all()
+        res = result.all()
+        if len(res) == 0:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Tasks with project id={project_id} was not found",
+            )
+        return res
 
     @classmethod
     async def create_task_for_project_id(
         cls, session: AsyncSession, task: TaskCreate
-    ) -> None:
+    ) -> int:
         data = task.model_dump()
         new_task = Task(**data)
         session.add(new_task)
         try:
             await session.commit()
+            await session.refresh(new_task)
         except Exception as ex:
             await session.rollback()
             raise HTTPException(status_code=500, detail=str(ex.orig))
+        return new_task.id
