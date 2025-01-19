@@ -19,10 +19,15 @@ class AppSettings(BaseModel):
     data_prefix: str = "/add_data"
 
 
+class TestSettings(BaseModel):
+    db: str
+
+
 class Settings(BaseSettings):
     db: DbSettings
     prefix: AppSettings = AppSettings()
     server: ServerSettings
+    test: TestSettings
     model_config = SettingsConfigDict(
         case_sensitive=False,
         env_file=".env",

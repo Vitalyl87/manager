@@ -10,7 +10,7 @@ from project_manager.task.status import Status
 class Task(Base):
     title: Mapped[str] = mapped_column(String(200))
     status: Mapped[Status] = mapped_column(
-        default=Status.new, server_default="'new'", nullable=False
+        default=Status.new, server_default="new", nullable=False
     )
     deadline: Mapped[date | None]
 

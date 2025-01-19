@@ -8,3 +8,13 @@ services:
       POSTGRES_PASSWORD: pwd
     ports:
       - 5432:5432
+
+  test_int_db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: test_int
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pwd
+    ports:
+      - 5433:5432
