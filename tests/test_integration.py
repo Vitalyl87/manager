@@ -1,14 +1,16 @@
+import json
 from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
+from faker import Faker
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import (
+    AsyncConnection,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
-    AsyncConnection
 )
 
 from main import main_app
@@ -17,8 +19,6 @@ from project_manager.config import settings
 from project_manager.db_helper import dp_helper
 from project_manager.project.models import Project
 from project_manager.task.models import Task
-import json
-from faker import Faker
 
 fake = Faker("ru_RU")
 
@@ -128,7 +128,9 @@ async def test_post_new_task(async_client, async_db_session):
         "project_id": 2,
     }
 
-    response = await async_client.post("/tasks/", content=json.dumps(test_request_payload))
+    response = await async_client.post(
+        "/tasks/", content=json.dumps(test_request_payload)
+    )
     client_data = response.json()
     expected = await async_db_session.get(Task, client_data["created_task_id"])
 
@@ -153,7 +155,9 @@ async def test_delete_task(async_client, async_db_session):
 async def test_patch_task(async_client, async_db_session):
     task_id_to_patch = 1
     new_status = "completed"
-    response = await async_client.patch(f"/tasks/{task_id_to_patch}/status", params={"status": new_status})
+    response = await async_client.patch(
+        f"/tasks/{task_id_to_patch}/status", params={"status": new_status}
+    )
     expected = await async_db_session.get(Task, task_id_to_patch)
 
     assert expected.status.value == new_status
@@ -164,6 +168,8 @@ async def test_patch_task(async_client, async_db_session):
 async def test_patch_task_bad_status(async_client):
     task_id_to_patch = 1
     new_status = "something_else"
-    response = await async_client.patch(f"/tasks/{task_id_to_patch}/status", params={"status": new_status})
+    response = await async_client.patch(
+        f"/tasks/{task_id_to_patch}/status", params={"status": new_status}
+    )
 
     assert response.status_code == 422
