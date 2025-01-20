@@ -1,4 +1,3 @@
-import asyncio
 from typing import AsyncGenerator
 
 import pytest
@@ -7,7 +6,6 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
-    async_scoped_session,
     async_sessionmaker,
     create_async_engine,
     AsyncConnection
@@ -19,13 +17,15 @@ from project_manager.config import settings
 from project_manager.db_helper import dp_helper
 from project_manager.project.models import Project
 from project_manager.task.models import Task
+import json
+from faker import Faker
 
-ASYNC_DATABASE_URL = settings.test.db
+fake = Faker("ru_RU")
 
 
 @pytest_asyncio.fixture(scope="function")
 async def async_db_connection() -> AsyncGenerator[AsyncConnection, None]:
-    async_engine = create_async_engine(ASYNC_DATABASE_URL, echo=False)
+    async_engine = create_async_engine(settings.test.db, echo=False)
 
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -117,3 +117,53 @@ async def test_get_task_by_project_id(async_client, async_db_session):
 
     assert client_data == expected_data
     assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_post_new_task(async_client, async_db_session):
+    test_request_payload = {
+        "title": fake.sentence(nb_words=3),
+        "status": "new",
+        "deadline": str(fake.date_this_year()),
+        "project_id": 2,
+    }
+
+    response = await async_client.post("/tasks/", content=json.dumps(test_request_payload))
+    client_data = response.json()
+    expected = await async_db_session.get(Task, client_data["created_task_id"])
+
+    assert response.status_code == 201
+    assert test_request_payload["title"] == expected.title
+    assert test_request_payload["status"] == expected.status.value
+    assert test_request_payload["deadline"] == str(expected.deadline)
+    assert test_request_payload["project_id"] == expected.project_id
+
+
+@pytest.mark.asyncio
+async def test_delete_task(async_client, async_db_session):
+    task_id_to_delete = 1
+    response = await async_client.delete(f"/tasks/{task_id_to_delete}")
+    expected = await async_db_session.get(Task, task_id_to_delete)
+
+    assert expected is None
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_patch_task(async_client, async_db_session):
+    task_id_to_patch = 1
+    new_status = "completed"
+    response = await async_client.patch(f"/tasks/{task_id_to_patch}/status", params={"status": new_status})
+    expected = await async_db_session.get(Task, task_id_to_patch)
+
+    assert expected.status.value == new_status
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_patch_task_bad_status(async_client):
+    task_id_to_patch = 1
+    new_status = "something_else"
+    response = await async_client.patch(f"/tasks/{task_id_to_patch}/status", params={"status": new_status})
+
+    assert response.status_code == 422
