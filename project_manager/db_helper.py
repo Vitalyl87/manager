@@ -25,4 +25,4 @@ class Db_hepler:
         await self.engine.dispose()
 
 
-dp_helper = Db_hepler(url=str(settings.db.url), echo=settings.db.echo)
+db_helper = Db_hepler(url=str(settings.db.url), echo=settings.db.echo)

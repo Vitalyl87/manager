@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import (
 from main import main_app
 from project_manager.base import Base
 from project_manager.config import settings
-from project_manager.db_helper import dp_helper
+from project_manager.db_helper import db_helper
 from project_manager.project.models import Project
 from project_manager.task.models import Task
 
@@ -66,9 +66,9 @@ async def async_client(async_db_session) -> AsyncGenerator[AsyncClient, None]:
     def override_get_db():
         yield async_db_session
 
-    main_app.dependency_overrides[dp_helper.get_session] = override_get_db
+    main_app.dependency_overrides[db_helper.get_session] = override_get_db
     yield AsyncClient(transport=ASGITransport(app=main_app), base_url="http://test")
-    del main_app.dependency_overrides[dp_helper.get_session]
+    del main_app.dependency_overrides[db_helper.get_session]
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
