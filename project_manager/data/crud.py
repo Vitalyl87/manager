@@ -10,7 +10,9 @@ from project_manager.task.status import Status
 fake = Faker("ru_RU")
 
 
-class DataDao:
+class DataCrud:
+    """Crud actions for generate app data"""
+
     @classmethod
     async def create(
         cls,

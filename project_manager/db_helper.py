@@ -11,6 +11,8 @@ from project_manager.config import settings
 
 
 class Db_hepler:
+    """Class for database communication"""
+
     def __init__(self, url: str, echo: bool) -> None:
         self.engine: AsyncEngine = create_async_engine(url=url, echo=echo)
         self.session_factory = async_sessionmaker(

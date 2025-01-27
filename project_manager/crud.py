@@ -5,7 +5,9 @@ from sqlalchemy import Select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class BaseDao:
+class BaseCrud:
+    """Class for basic crud operations with database"""
+
     model = None
 
     @classmethod

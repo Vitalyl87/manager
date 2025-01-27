@@ -24,6 +24,8 @@ class TestSettings(BaseModel):
 
 
 class Settings(BaseSettings):
+    """Settings for application"""
+
     db: DbSettings
     prefix: AppSettings = AppSettings()
     server: ServerSettings

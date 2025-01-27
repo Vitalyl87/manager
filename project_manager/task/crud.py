@@ -2,12 +2,14 @@ from fastapi import HTTPException
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from project_manager.base_dao import BaseDao
+from project_manager.crud import BaseCrud
 from project_manager.task.models import Task
 from project_manager.task.schemas import TaskCreate, TaskRead
 
 
-class TaskDao(BaseDao):
+class TaskCrud(BaseCrud):
+    """Crud operations for tasks"""
+
     model = Task
 
     @classmethod
@@ -25,7 +27,11 @@ class TaskDao(BaseDao):
         if len(res) == 0:
             raise HTTPException(
                 status_code=404,
-                detail=f"Tasks with project id={project_id} was not found",
+                detail=(
+                    f"Tasks with project id={project_id} was not found"
+                    if not filter_by
+                    else f"Tasks with project id={project_id} and status={filter_by['status'].value} was not found"
+                ),
             )
         return res
 

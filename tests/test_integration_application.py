@@ -13,10 +13,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from main import main_app
 from project_manager.base import Base
 from project_manager.config import settings
 from project_manager.db_helper import db_helper
+from project_manager.main import main_app
 from project_manager.project.models import Project
 from project_manager.task.models import Task
 

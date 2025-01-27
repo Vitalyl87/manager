@@ -8,6 +8,8 @@ from project_manager.task.status import Status
 
 
 class Task(Base):
+    """Tasks table"""
+
     title: Mapped[str] = mapped_column(String(200))
     status: Mapped[Status] = mapped_column(
         default=Status.new, server_default="new", nullable=False

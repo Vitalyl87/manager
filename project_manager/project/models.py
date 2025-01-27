@@ -7,6 +7,8 @@ from project_manager.task.models import Task
 
 
 class Project(Base):
+    """Projects table"""
+
     name: Mapped[str] = mapped_column(String(100))
     description: Mapped[str] = mapped_column(Text, nullable=True)
 

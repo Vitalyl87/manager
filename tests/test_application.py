@@ -1,8 +1,46 @@
 import json
 
 import pytest
+from httpx import ASGITransport, AsyncClient
 
-from project_manager.task.dao import TaskDao
+from project_manager.main import main_app
+from project_manager.task.crud import TaskCrud
+
+
+def test_root_path(test_app):
+    response = test_app.get("/")
+    assert response.status_code == 200
+    assert response.json() == "hello world"
+
+
+def test_project_path(test_app):
+    response = test_app.get("/projects")
+    assert response.status_code == 200
+
+
+def test_bad_path(test_app):
+    response = test_app.get("/dqdwq")
+    assert response.status_code == 404
+
+
+def test_task_path(test_app):
+    response = test_app.get("/tasks")
+    assert response.status_code == 200
+
+
+def test_bad_task_path(test_app):
+    response = test_app.get("/tasks/xasxa")
+    assert response.status_code != 200
+
+
+@pytest.mark.anyio
+async def test_root():
+    async with AsyncClient(
+        transport=ASGITransport(app=main_app), base_url="http://test"
+    ) as ac:
+        response = await ac.get("/")
+    assert response.status_code == 200
+    assert response.json() == "hello world"
 
 
 def test_get_task_by_project_id(test_app, monkeypatch):
@@ -14,7 +52,7 @@ def test_get_task_by_project_id(test_app, monkeypatch):
     async def mock_get(session, project_id):
         return [{"title": "string", "status": "new", "deadline": "2025-01-11"}]
 
-    monkeypatch.setattr(TaskDao, "get_task_by_project_id", mock_get)
+    monkeypatch.setattr(TaskCrud, "get_task_by_project_id", mock_get)
 
     response = test_app.get(f"/tasks/{project_id}")
 
@@ -31,7 +69,7 @@ def test_get_task_by_project_id_and_status(test_app, monkeypatch):
     async def mock_get(session, project_id, status):
         return [{"title": "string", "status": "new", "deadline": "2025-01-11"}]
 
-    monkeypatch.setattr(TaskDao, "get_task_by_project_id", mock_get)
+    monkeypatch.setattr(TaskCrud, "get_task_by_project_id", mock_get)
 
     response = test_app.get(f"/tasks/{project_id}", params={"status": "new"})
 
@@ -54,7 +92,7 @@ def test_create_task(test_app, monkeypatch):
     async def mock_post(session, task):
         return 1
 
-    monkeypatch.setattr(TaskDao, "create_task_for_project_id", mock_post)
+    monkeypatch.setattr(TaskCrud, "create_task_for_project_id", mock_post)
 
     response = test_app.post(
         "/tasks/",
@@ -74,7 +112,7 @@ def test_delete_task(test_app, monkeypatch):
     async def mock_delete(session, id):
         return None
 
-    monkeypatch.setattr(TaskDao, "delete_by_id_or_404", mock_delete)
+    monkeypatch.setattr(TaskCrud, "delete_by_id_or_404", mock_delete)
 
     response = test_app.delete(f"/tasks/{task_id}")
 
@@ -91,7 +129,7 @@ def test_patch_task(test_app, monkeypatch):
     async def mock_update(session, id, status):
         return None
 
-    monkeypatch.setattr(TaskDao, "patch_by_id_or_404", mock_update)
+    monkeypatch.setattr(TaskCrud, "patch_by_id_or_404", mock_update)
     response = test_app.patch(f"/tasks/{task_id}/status", params={"status": "new"})
 
     assert response.status_code == 200
