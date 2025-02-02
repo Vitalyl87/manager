@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -39,3 +41,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+db_host = os.environ.get("DB_HOST", "localhost")
+if db_host != "localhost":
+    settings.db.url = str(settings.db.url).replace("localhost", db_host)
