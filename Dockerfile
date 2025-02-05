@@ -9,6 +9,7 @@ RUN : \
     && pip install poetry \
     && poetry config virtualenvs.create false
 
+ENV DB_HOST db
 RUN poetry install --no-root --only main
-CMD uvicorn project_manager.main:main_app --host 0.0.0.0 --port 8080
+CMD alembic upgrade head && uvicorn project_manager.main:main_app --host 0.0.0.0 --port 8080
 EXPOSE 8080
